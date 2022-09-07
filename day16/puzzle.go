@@ -58,10 +58,15 @@ func partOne(lines []string) (string, error) {
 		fmt.Println(convertToInt(literal))
 	} else {
 		if isLengthOfSubpackets(rune(signal[6])) {
-			fmt.Println(getLengthOfSubpackets(signal[7:]))
-			firstLiteral, _ := parseLiteral(signal[22:])
+			lengthSubp, _ := getLengthOfSubpackets(signal[7:])
+			fmt.Println(lengthSubp)
+			firstLiteral, lengthLiteral, _ := parseLiteral(signal[22+6:]) // 6 is version and type ID of this subpacket
 			fmt.Println(firstLiteral)
 			fmt.Println(convertToInt(firstLiteral))
+			lengthSubp = lengthSubp - lengthLiteral
+			secondLiteral, _ := parseLiteral(signal[22+6+lengthLiteral+6:]) // 6 is version and type ID of this subpacket
+			fmt.Println(secondLiteral)
+			fmt.Println(convertToInt(secondLiteral))
 		}
 	}
 
@@ -91,7 +96,7 @@ func parseLiteral(signalPart string) (string, error) {
 		}
 
 	}
-	// TODO return also index = i  + necesarry padding accounted for
+	// TODO return also length of literal = i  + necesarry padding accounted for
 	return literal, nil
 }
 
