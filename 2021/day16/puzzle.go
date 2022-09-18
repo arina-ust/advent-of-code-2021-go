@@ -19,7 +19,8 @@ func Solve(easy bool) (name string, res string, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
+	// res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 }
@@ -32,9 +33,25 @@ func setInput(easy bool) {
 	}
 }
 
-func partOne(lines []string) (string, error) {
-	line := lines[0]
+func partTwo(lines []string) (string, error) {
+	signal, err := getBinarySignal(lines[0])
+	if err != nil {
+		return "", err
+	}
 
+	res, err := parseWithOperators(signal)
+	if err != nil {
+		return "", err
+	}
+	return strconv.FormatInt(int64(res), 10), nil
+}
+
+// return evaluated expression
+func parseWithOperators(signal string) (int64, error) {
+	panic("unimplemented")
+}
+
+func getBinarySignal(line string) (string, error) {
 	bytes, err := hex.DecodeString(line)
 	if err != nil {
 		return "", err
@@ -43,6 +60,14 @@ func partOne(lines []string) (string, error) {
 	var signal string
 	for _, b := range bytes {
 		signal += fmt.Sprintf("%08b", b)
+	}
+	return signal, nil
+}
+
+func partOne(lines []string) (string, error) {
+	signal, err := getBinarySignal(lines[0])
+	if err != nil {
+		return "", err
 	}
 
 	res, err := parse(signal, 0, 0, 0)
