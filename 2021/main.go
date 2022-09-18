@@ -1,7 +1,7 @@
 package main
 
 import (
-	"advent-of-code-2021/day16"
+	"advent-of-code-go/2021/day16"
 	"fmt"
 )
 

@@ -1,2 +1,2 @@
-## Advent of code 2021 in Golang
-Starting where I left off with Python last year
+## Advent of code in Golang
+For 2021, starting where I left off with Python last year (on day 16).

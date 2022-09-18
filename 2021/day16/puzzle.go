@@ -1,7 +1,7 @@
 package day16
 
 import (
-	"advent-of-code-2021/util"
+	"advent-of-code-go/util"
 	"encoding/hex"
 	"fmt"
 	"strconv"
