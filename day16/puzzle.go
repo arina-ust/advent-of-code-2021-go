@@ -44,8 +44,6 @@ func partOne(lines []string) (string, error) {
 	for _, b := range bytes {
 		signal += fmt.Sprintf("%08b", b)
 	}
-	fmt.Println(signal)
-	fmt.Println(len(signal))
 
 	res, err := parse(signal, 0, 0, 0)
 	if err != nil {
@@ -83,8 +81,10 @@ func parse(signal string, versionSum int64, lengthSubP int64, numSubP int64) (in
 			}
 		} else if lengthSubP != 0 && numSubP == 0 {
 			lengthSubP -= int64(nextIndex)
-		} else {
+		} else if lengthSubP == 0 && numSubP != 0 {
 			numSubP--
+		} else {
+			// ignore
 		}
 
 		versionSum, _ = parse(signal[nextIndex:], versionSum, lengthSubP, numSubP)
@@ -120,7 +120,7 @@ func parseLiteral(signalPart string) (string, int, error) {
 		literal += signalPart[i+1 : i+5]
 
 		if val == 0 {
-			exitIndex = 6 + i + 5
+			exitIndex = 6 + i + 5 // vesion x 3 + typeID x 3 + next 5 bits
 			break
 		}
 
