@@ -15,12 +15,11 @@ func Solve(easy bool) (name string, res string, err error) {
 	name = day
 	setInput(easy)
 	lines, err := util.ReadStringList(inputFile)
-
-	if easy {
-		res, err = partOne(lines)
-	} else {
-		return day, "", fmt.Errorf("not solved yet")
+	if err != nil {
+		return
 	}
+
+	res, err = partOne(lines)
 
 	return
 }
@@ -48,29 +47,7 @@ func partOne(lines []string) (string, error) {
 	fmt.Println(signal)
 	fmt.Println(len(signal))
 
-	// fmt.Println(parseVersion(signal))
-	// typeID, _ := parseTypeID(signal)
-	// fmt.Println(typeID)
-
-	// if isLiteral(typeID) {
-	// 	literal, _ := parseLiteral(signal[6:])
-	// 	fmt.Println(literal)
-	// 	fmt.Println(convertToInt(literal))
-	// } else {
-	// 	if isLengthOfSubpackets(rune(signal[6])) {
-	// 		lengthSubp, _ := getLengthOfSubpackets(signal[7:])
-	// 		fmt.Println(lengthSubp)
-	// 		firstLiteral, lengthLiteral, _ := parseLiteral(signal[22+6:]) // 6 is version and type ID of this subpacket
-	// 		fmt.Println(firstLiteral)
-	// 		fmt.Println(convertToInt(firstLiteral))
-	// 		lengthSubp = lengthSubp - lengthLiteral
-	// 		secondLiteral, _ := parseLiteral(signal[22+6+lengthLiteral+6:]) // 6 is version and type ID of this subpacket
-	// 		fmt.Println(secondLiteral)
-	// 		fmt.Println(convertToInt(secondLiteral))
-	// 	}
-	// }
-
-	res, err := parse(signal, 0)
+	res, err := parse(signal, 0, 0, 0)
 	if err != nil {
 		return "", err
 	}
@@ -78,8 +55,8 @@ func partOne(lines []string) (string, error) {
 }
 
 // return version sum
-func parse(signal string, versionSum int64) (int64, error) {
-	if len(signal) < 7 {
+func parse(signal string, versionSum int64, lengthSubP int64, numSubP int64) (int64, error) {
+	if len(signal) < 11 {
 		return versionSum, nil
 	}
 
@@ -99,20 +76,25 @@ func parse(signal string, versionSum int64) (int64, error) {
 		if err != nil {
 			return -1, err
 		}
-		for nextIndex%4 != 0 {
-			nextIndex++
+
+		if lengthSubP == 0 && numSubP == 0 {
+			for nextIndex%4 != 0 {
+				nextIndex++
+			}
+		} else if lengthSubP != 0 && numSubP == 0 {
+			lengthSubP -= int64(nextIndex)
+		} else {
+			numSubP--
 		}
-		parse(signal[nextIndex:], versionSum)
+
+		versionSum, _ = parse(signal[nextIndex:], versionSum, lengthSubP, numSubP)
 	} else {
 		if isLengthOfSubpackets(rune(signal[6])) {
-			// lengthSubp, _ := getLengthOfSubpackets(signal[7:])
-			// indexOfNextPacket := 7+15+lengthSubp
-			parse(signal[7+15:], versionSum)
+			calcLengthSubp, _ := getLengthOfSubpackets(signal[7:])
+			versionSum, _ = parse(signal[7+15:], versionSum, calcLengthSubp, numSubP)
 		} else {
-			// nSubP, _ := getNumberOfSubpackets(signal[7:])
-			// for i: = 0; i < nSubP; i++ {
-			parse(signal[7+15:], versionSum)
-			// }
+			calcNumSubP, _ := getNumberOfSubpackets(signal[7:])
+			versionSum, _ = parse(signal[7+11:], versionSum, lengthSubP, calcNumSubP)
 		}
 	}
 	return versionSum, nil
@@ -144,8 +126,8 @@ func parseLiteral(signalPart string) (string, int, error) {
 
 	}
 
-	l, _ := convertToInt(literal)
-	fmt.Printf("Exit index in literal %v was %v \n", l, exitIndex)
+	// l, _ := convertToInt(literal)
+	// fmt.Printf("Exit index in literal %v was %v \n", l, exitIndex)
 
 	return literal, exitIndex, nil
 }
