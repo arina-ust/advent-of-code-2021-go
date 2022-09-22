@@ -47,8 +47,57 @@ func partTwo(lines []string) (string, error) {
 }
 
 // return evaluated expression
-func parseWithOperators(signal string) (int64, error) {
-	panic("unimplemented")
+func parseWithOperators(signal string, stack []string, lengthSubP int64, numSubP int64) (int64, error) {
+	if len(signal) < 11 {
+		return evaluate(stack)
+	}
+
+	typeID, err := parseTypeID(signal)
+	if err != nil {
+		return -1, err
+	}
+
+	if isLiteral(typeID) {
+		literal, nextIndex, err := parseLiteral(signal[6:])
+		if err != nil {
+			return -1, err
+		}
+
+		stack = append(stack, literal)
+
+		if lengthSubP == 0 && numSubP == 0 {
+			for nextIndex%4 != 0 {
+				nextIndex++
+			}
+		} else if lengthSubP != 0 && numSubP == 0 {
+			lengthSubP -= int64(nextIndex)
+		} else if lengthSubP == 0 && numSubP != 0 {
+			numSubP--
+		} else {
+			// ignore
+		}
+
+		parseWithOperators(signal[nextIndex:], stack, lengthSubP, numSubP)
+	} else {
+		stack = append(stack, getOperator(typeID))
+
+		if isLengthOfSubpackets(rune(signal[6])) {
+			calcLengthSubp, _ := getLengthOfSubpackets(signal[7:])
+			parseWithOperators(signal[7+15:], stack, calcLengthSubp, numSubP)
+		} else {
+			calcNumSubP, _ := getNumberOfSubpackets(signal[7:])
+			parseWithOperators(signal[7+11:], stack, lengthSubP, calcNumSubP)
+		}
+	}
+	return evaluate(stack)
+}
+
+func getOperator(typeID int64) func() {
+	panic("unimplemented") // TODO create stack of functions? and literal is a function as well? and return a function here?
+}
+
+func evaluate(stack []string) (int64, error) {
+	return -1, nil
 }
 
 func getBinarySignal(line string) (string, error) {
