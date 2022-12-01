@@ -39,7 +39,7 @@ func partTwo(lines []string) (string, error) {
 		return "", err
 	}
 
-	res, err := parseWithOperators(signal)
+	res, err := parseWithOperators(signal, make([]string, 1), 0, 0)
 	if err != nil {
 		return "", err
 	}
@@ -79,7 +79,8 @@ func parseWithOperators(signal string, stack []string, lengthSubP int64, numSubP
 
 		parseWithOperators(signal[nextIndex:], stack, lengthSubP, numSubP)
 	} else {
-		stack = append(stack, getOperator(typeID))
+		x := getOperator(typeID)
+		stack = append(stack, x)
 
 		if isLengthOfSubpackets(rune(signal[6])) {
 			calcLengthSubp, _ := getLengthOfSubpackets(signal[7:])
@@ -92,7 +93,7 @@ func parseWithOperators(signal string, stack []string, lengthSubP int64, numSubP
 	return evaluate(stack)
 }
 
-func getOperator(typeID int64) func() {
+func getOperator(typeID int64) string { // func() {
 	panic("unimplemented") // TODO create stack of functions? and literal is a function as well? and return a function here?
 }
 
