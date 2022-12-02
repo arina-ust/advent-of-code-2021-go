@@ -17,7 +17,8 @@ func Solve(easy bool) (name string, res string, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
+	// res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 }
@@ -63,6 +64,34 @@ func (r round) play(opponent round) int {
 	return lost
 }
 
+func (r round) findResponseRound(result rune) round {
+	if r.name == "rock" {
+		if result == 'X' { // lose
+			return scores['C']
+		} else if result == 'Y' { // draw
+			return scores['A']
+		} else { // win
+			return scores['B']
+		}
+	} else if r.name == "paper" {
+		if result == 'X' { // lose
+			return scores['A']
+		} else if result == 'Y' { // draw
+			return scores['B']
+		} else { // win
+			return scores['C']
+		}
+	} else {
+		if result == 'X' { // lose
+			return scores['B']
+		} else if result == 'Y' { // draw
+			return scores['C']
+		} else { // win
+			return scores['A']
+		}
+	}
+}
+
 var scores = map[rune]round{
 	'A': round{
 		name:         "rock",
@@ -100,6 +129,17 @@ func partOne(lines []string) (string, error) {
 	total := 0
 	for _, line := range lines {
 		opponent, response := scores[rune(line[0])], scores[rune(line[2])]
+		score := response.play(opponent) + response.score
+		total += score
+	}
+	return strconv.Itoa(total), nil
+}
+
+func partTwo(lines []string) (string, error) {
+	total := 0
+	for _, line := range lines {
+		opponent := scores[rune(line[0])]
+		response := opponent.findResponseRound(rune(line[2]))
 		score := response.play(opponent) + response.score
 		total += score
 	}
