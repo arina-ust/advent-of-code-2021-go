@@ -32,6 +32,8 @@ func setInput(easy bool) {
 }
 
 const lost, draw, won int = 0, 3, 6
+const rock, paper, scissors = "rock", "paper", "scissors"
+const lose, playDraw = 'X', 'Y'
 
 type round struct {
 	name         string
@@ -43,20 +45,20 @@ func (r round) play(opponent round) int {
 	if r.name == opponent.name {
 		return draw
 	}
-	if r.name == "rock" {
-		if opponent.name == "scissors" {
+	if r.name == rock {
+		if opponent.name == scissors {
 			return won
 		}
 		return lost
 	}
-	if r.name == "paper" {
-		if opponent.name == "rock" {
+	if r.name == paper {
+		if opponent.name == rock {
 			return won
 		}
 		return lost
 	}
-	if r.name == "scissors" {
-		if opponent.name == "paper" {
+	if r.name == scissors {
+		if opponent.name == paper {
 			return won
 		}
 		return lost
@@ -65,26 +67,26 @@ func (r round) play(opponent round) int {
 }
 
 func (r round) findResponseRound(result rune) round {
-	if r.name == "rock" {
-		if result == 'X' { // lose
+	if r.name == rock {
+		if result == lose {
 			return scores['C']
-		} else if result == 'Y' { // draw
+		} else if result == playDraw {
 			return scores['A']
 		} else { // win
 			return scores['B']
 		}
-	} else if r.name == "paper" {
-		if result == 'X' { // lose
+	} else if r.name == paper {
+		if result == lose {
 			return scores['A']
-		} else if result == 'Y' { // draw
+		} else if result == playDraw {
 			return scores['B']
 		} else { // win
 			return scores['C']
 		}
 	} else {
-		if result == 'X' { // lose
+		if result == lose {
 			return scores['B']
-		} else if result == 'Y' { // draw
+		} else if result == playDraw {
 			return scores['C']
 		} else { // win
 			return scores['A']
@@ -93,33 +95,34 @@ func (r round) findResponseRound(result rune) round {
 }
 
 var scores = map[rune]round{
-	'A': round{
-		name:         "rock",
+	'A': {
+		name:         rock,
 		yourResponse: false,
 		score:        1,
 	},
-	'B': round{
-		name:         "paper",
+	'B': {
+		name:         paper,
 		yourResponse: false,
 		score:        2,
 	},
-	'C': round{
-		name:         "scissors",
+	'C': {
+		name:         scissors,
 		yourResponse: false,
 		score:        3,
 	},
-	'X': round{
-		name:         "rock",
+	// Not needed for part 2 -->
+	'X': {
+		name:         rock,
 		yourResponse: true,
 		score:        1,
 	},
-	'Y': round{
-		name:         "paper",
+	'Y': {
+		name:         paper,
 		yourResponse: true,
 		score:        2,
 	},
-	'Z': round{
-		name:         "scissors",
+	'Z': {
+		name:         scissors,
 		yourResponse: true,
 		score:        3,
 	},
