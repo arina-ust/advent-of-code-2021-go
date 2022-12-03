@@ -18,8 +18,8 @@ func Solve(easy bool) (name string, res string, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
-	// res, err = partTwo(lines)
+	// res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 }
@@ -45,6 +45,30 @@ func partOne(lines []string) (string, error) {
 		}
 		for _, c := range line[secondCompartmentIndex:] {
 			if count[c] != 0 {
+				total += (strings.Index(alphabet, string(c)) + 1)
+				break
+			}
+		}
+
+	}
+	return strconv.Itoa(total), nil
+}
+
+func partTwo(lines []string) (string, error) {
+	total := 0
+	for group := 0; group < len(lines); group += 3 {
+		l := len(lines[group]) + len(lines[group+1]) + len(lines[group+2])
+		candidates := make(map[rune]bool, l)
+		for _, c := range lines[group] {
+			candidates[c] = false
+		}
+		for _, c := range lines[group+1] {
+			if _, ok := candidates[c]; ok {
+				candidates[c] = true
+			}
+		}
+		for _, c := range lines[group+2] {
+			if candidates[c] {
 				total += (strings.Index(alphabet, string(c)) + 1)
 				break
 			}
