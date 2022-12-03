@@ -39,7 +39,7 @@ func partOne(lines []string) (string, error) {
 	for _, line := range lines {
 		l := len(line)
 		secondCompartmentIndex := l / 2
-		var count map[rune]int = make(map[rune]int, l)
+		var count map[rune]int = make(map[rune]int, l) // TODO should have used strings.ContainsRune to check!
 		for _, c := range line[:secondCompartmentIndex] {
 			count[c] += 1
 		}
