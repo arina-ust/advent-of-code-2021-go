@@ -19,7 +19,6 @@ func Solve(easy bool) (name string, res string, err error) {
 	}
 
 	res, err = partOne(lines)
-	// res, err = partTwo(lines)
 
 	return
 }
@@ -38,13 +37,17 @@ type elfPair struct {
 }
 
 func (ep elfPair) hasFullOverlap() bool {
-	// if ep.s2[0] > ep.s1[1] || ep.s2[1] < ep.s1[0] { // no overlap
-	// 	return false
-	// }
 	if (ep.s1[0] <= ep.s2[0] && ep.s1[1] >= ep.s2[1]) || (ep.s1[0] >= ep.s2[0] && ep.s1[1] <= ep.s2[1]) {
 		return true
 	}
 	return false
+}
+
+func (ep elfPair) hasAnyOverlap() bool {
+	if ep.s2[0] > ep.s1[1] || ep.s2[1] < ep.s1[0] {
+		return false
+	}
+	return true
 }
 
 func partOne(lines []string) (string, error) {
@@ -66,7 +69,13 @@ func partOne(lines []string) (string, error) {
 			s2: []int{z, w},
 		}
 
-		if ep.hasFullOverlap() {
+		// -> part 1 <-
+		// if ep.hasFullOverlap() {
+		// 	count++
+		// }
+
+		// -> part 2 <-
+		if ep.hasAnyOverlap() {
 			count++
 		}
 
