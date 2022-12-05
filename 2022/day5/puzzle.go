@@ -32,7 +32,7 @@ func setInput(easy bool) {
 }
 
 func partOne(lines []string) (string, error) {
-	var numStacks int = 9 + 1 // for full task; 3 + 1 for easy
+	var numStacks int = 9 + 1 // 9 + 1 for full task; 3 + 1 for easy
 
 	stacks := make([][]rune, numStacks)
 
@@ -75,10 +75,22 @@ func partOne(lines []string) (string, error) {
 			fromStack, _ := strconv.Atoi(instructions[3])
 			toStack, _ := strconv.Atoi(strings.Trim(instructions[5], "\n"))
 
-			for j := 0; j < numCrates; j++ {
-				crate := stacks[fromStack][len(stacks[fromStack])-1]
+			// -> part 1 <-
+			// for j := 0; j < numCrates; j++ {
+			// 	crate := stacks[fromStack][len(stacks[fromStack])-1]
+			// 	stacks[toStack] = append(stacks[toStack], crate)
+			// 	stacks[fromStack] = stacks[fromStack][:len(stacks[fromStack])-1]
+			// }
+
+			// -> part 2 <-
+			for j := numCrates; j > 0; j-- {
+				crate := stacks[fromStack][len(stacks[fromStack])-j]
 				stacks[toStack] = append(stacks[toStack], crate)
+			}
+			if numCrates == 1 {
 				stacks[fromStack] = stacks[fromStack][:len(stacks[fromStack])-1]
+			} else {
+				stacks[fromStack] = stacks[fromStack][:len(stacks[fromStack])-numCrates]
 			}
 		}
 
