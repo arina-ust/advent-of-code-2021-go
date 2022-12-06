@@ -47,9 +47,15 @@ func (m marker) hasDuplicate() bool {
 
 func partOne(lines []string) (string, error) {
 	line := lines[0]
+	// limitPart1 := 4
+	limitPart2 := 14
+	return solveMarker(line, limitPart2)
+}
+
+func solveMarker(line string, limit int) (string, error) {
 	charCount := len(line)
 
-	for i, j := 0, 4; i < charCount-3 && j < charCount+1; {
+	for i, j := 0, limit; i < charCount-(limit+1) && j < charCount+1; {
 		if marker(line[i:j]).hasDuplicate() {
 			i++
 			j++
