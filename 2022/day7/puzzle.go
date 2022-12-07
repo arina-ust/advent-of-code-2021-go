@@ -2,6 +2,7 @@ package day7
 
 import (
 	"advent-of-code-go/util"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -18,7 +19,8 @@ func Solve(easy bool) (name string, res string, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
+	// res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 }
@@ -107,13 +109,37 @@ func parseFileSystemObject(p *directory, s string) fileSystemObject {
 func partOne(lines []string) (string, error) {
 	rootDir := buildFileSystem(lines)
 
-	dirs := findDirectories(rootDir, 100000)
+	calculateSizes(rootDir)
+
+	dirs := findDirectories(rootDir, 100000, true)
 
 	sum := int64(0)
 	for _, d := range *dirs {
 		sum += d.size
 	}
 	return strconv.FormatInt(sum, 10), nil
+}
+
+func partTwo(lines []string) (string, error) {
+	rootDir := buildFileSystem(lines)
+
+	calculateSizes(rootDir)
+
+	maxSpace, neededSpace := int64(70000000), int64(30000000)
+	unusedSpace := maxSpace - rootDir.size
+
+	minToFreeUp := neededSpace - unusedSpace
+
+	dirs := findDirectories(rootDir, minToFreeUp, false)
+	*dirs = append(*dirs, rootDir)
+
+	min := int64(math.MaxInt64)
+	for _, d := range *dirs {
+		if d.size < min {
+			min = d.size
+		}
+	}
+	return strconv.FormatInt(min, 10), nil
 }
 
 func buildFileSystem(lines []string) *directory {
@@ -150,10 +176,13 @@ func buildFileSystem(lines []string) *directory {
 	return rootDir
 }
 
-func findDirectories(rootDir *directory, upTo int64) *[]*directory {
+func findDirectories(rootDir *directory, limit int64, upTo bool) *[]*directory {
 	res := []*directory{}
-	calculateSizes(rootDir)
-	find(rootDir, upTo, &res)
+	if upTo {
+		findUpTo(rootDir, limit, &res)
+	} else {
+		findMoreThan(rootDir, limit, &res)
+	}
 	return &res
 }
 
@@ -169,13 +198,24 @@ func calculateSizes(dir *directory) {
 	}
 }
 
-func find(dir *directory, upTo int64, res *[]*directory) {
+func findUpTo(dir *directory, limit int64, res *[]*directory) {
 	for _, object := range dir.files {
 		if o, ok := object.(*directory); ok {
-			if o.size <= upTo {
-				*res = append(*res, o) // TODO might be problematic and a set needed
+			if o.size <= limit {
+				*res = append(*res, o)
 			}
-			find(o, upTo, res)
+			findUpTo(o, limit, res)
+		}
+	}
+}
+
+func findMoreThan(dir *directory, limit int64, res *[]*directory) {
+	for _, object := range dir.files {
+		if o, ok := object.(*directory); ok {
+			if o.size >= limit {
+				*res = append(*res, o)
+			}
+			findMoreThan(o, limit, res)
 		}
 	}
 }
