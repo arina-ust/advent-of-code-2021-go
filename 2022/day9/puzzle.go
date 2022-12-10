@@ -20,8 +20,8 @@ func Solve(easy bool) (name string, res string, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
-	// res, err = partTwo(matrix)
+	// res, err = partOne(lines, 2)
+	res, err = partOne(lines, 10)
 
 	return
 }
@@ -35,17 +35,8 @@ func setInput(easy bool) {
 }
 
 type rope struct {
-	head          head
-	tail          tail
+	knots         []point
 	tailPositions map[point]bool
-}
-
-type head struct {
-	coord point
-}
-
-type tail struct {
-	coord point
 }
 
 type point struct {
@@ -53,92 +44,92 @@ type point struct {
 	y int
 }
 
-func (r *rope) areTouchingHeadAndTail() bool {
-	if r.head.coord.x == r.tail.coord.x && r.head.coord.y == r.tail.coord.y {
+func (r *rope) areTouchingHeadAndTail(i, j int) bool {
+	if r.knots[i].x == r.knots[j].x && r.knots[i].y == r.knots[j].y {
 		return true // same position
-	} else if r.head.coord.x == r.tail.coord.x && math.Abs(float64(r.head.coord.y-r.tail.coord.y)) == 1 {
+	} else if r.knots[i].x == r.knots[j].x && math.Abs(float64(r.knots[i].y-r.knots[j].y)) == 1 {
 		return true // touch vertically
-	} else if r.head.coord.y == r.tail.coord.y && math.Abs(float64(r.head.coord.x-r.tail.coord.x)) == 1 {
+	} else if r.knots[i].y == r.knots[j].y && math.Abs(float64(r.knots[i].x-r.knots[j].x)) == 1 {
 		return true // touch horizontally
-	} else if math.Abs(float64(r.head.coord.x-r.tail.coord.x)) == 1 && math.Abs(float64(r.head.coord.y-r.tail.coord.y)) == 1 {
+	} else if math.Abs(float64(r.knots[i].x-r.knots[j].x)) == 1 && math.Abs(float64(r.knots[i].y-r.knots[j].y)) == 1 {
 		return true // touch diagonally
 	}
 	return false
 }
 
-func (r *rope) moveRight() {
-	r.head.coord.x = r.head.coord.x + 1
-	r.moveTail()
+func (r *rope) moveRight(i int) {
+	r.knots[i].x = r.knots[i].x + 1
+	r.moveTail(i, i+1)
 }
 
 func (r *rope) noteTailsPosition() {
-	r.tailPositions[r.tail.coord] = true
+	tail := len(r.knots) - 1
+	r.tailPositions[r.knots[tail]] = true
 }
 
-func (r *rope) moveTail() {
-	if r.areTouchingHeadAndTail() {
+func (r *rope) moveTail(i, j int) {
+	if r.areTouchingHeadAndTail(i, j) {
 		return
 	}
 
-	if r.head.coord.x-r.tail.coord.x == 2 {
-		if r.head.coord.y-r.tail.coord.y == 0 {
-			r.tail.coord.x = r.tail.coord.x + 1
-		} else if r.head.coord.y-r.tail.coord.y == 1 {
-			r.tail.coord.x = r.tail.coord.x + 1
-			r.tail.coord.y = r.tail.coord.y + 1
-		} else if r.head.coord.y-r.tail.coord.y == -1 {
-			r.tail.coord.x = r.tail.coord.x + 1
-			r.tail.coord.y = r.tail.coord.y - 1
+	if r.knots[i].x-r.knots[j].x == 2 {
+		if r.knots[i].y-r.knots[j].y == 0 {
+			r.knots[j].x = r.knots[j].x + 1
+		} else if r.knots[i].y-r.knots[j].y >= 1 {
+			r.knots[j].x = r.knots[j].x + 1
+			r.knots[j].y = r.knots[j].y + 1
+		} else if r.knots[i].y-r.knots[j].y <= -1 {
+			r.knots[j].x = r.knots[j].x + 1
+			r.knots[j].y = r.knots[j].y - 1
 		}
-	} else if r.head.coord.x-r.tail.coord.x == -2 {
-		if r.head.coord.y-r.tail.coord.y == 0 {
-			r.tail.coord.x = r.tail.coord.x - 1
-		} else if r.head.coord.y-r.tail.coord.y == 1 {
-			r.tail.coord.x = r.tail.coord.x - 1
-			r.tail.coord.y = r.tail.coord.y + 1
-		} else if r.head.coord.y-r.tail.coord.y == -1 {
-			r.tail.coord.x = r.tail.coord.x - 1
-			r.tail.coord.y = r.tail.coord.y - 1
+	} else if r.knots[i].x-r.knots[j].x == -2 {
+		if r.knots[i].y-r.knots[j].y == 0 {
+			r.knots[j].x = r.knots[j].x - 1
+		} else if r.knots[i].y-r.knots[j].y >= 1 {
+			r.knots[j].x = r.knots[j].x - 1
+			r.knots[j].y = r.knots[j].y + 1
+		} else if r.knots[i].y-r.knots[j].y <= -1 {
+			r.knots[j].x = r.knots[j].x - 1
+			r.knots[j].y = r.knots[j].y - 1
 		}
-	} else if r.head.coord.y-r.tail.coord.y == 2 {
-		if r.head.coord.x-r.tail.coord.x == 0 {
-			r.tail.coord.y = r.tail.coord.y + 1
-		} else if r.head.coord.x-r.tail.coord.x == 1 {
-			r.tail.coord.y = r.tail.coord.y + 1
-			r.tail.coord.x = r.tail.coord.x + 1
-		} else if r.head.coord.x-r.tail.coord.x == -1 {
-			r.tail.coord.y = r.tail.coord.y + 1
-			r.tail.coord.x = r.tail.coord.x - 1
+	} else if r.knots[i].y-r.knots[j].y == 2 {
+		if r.knots[i].x-r.knots[j].x == 0 {
+			r.knots[j].y = r.knots[j].y + 1
+		} else if r.knots[i].x-r.knots[j].x >= 1 {
+			r.knots[j].y = r.knots[j].y + 1
+			r.knots[j].x = r.knots[j].x + 1
+		} else if r.knots[i].x-r.knots[j].x <= -1 {
+			r.knots[j].y = r.knots[j].y + 1
+			r.knots[j].x = r.knots[j].x - 1
 		}
-	} else if r.head.coord.y-r.tail.coord.y == -2 {
-		if r.head.coord.x-r.tail.coord.x == 0 {
-			r.tail.coord.y = r.tail.coord.y - 1
-		} else if r.head.coord.x-r.tail.coord.x == 1 {
-			r.tail.coord.y = r.tail.coord.y - 1
-			r.tail.coord.x = r.tail.coord.x + 1
-		} else if r.head.coord.x-r.tail.coord.x == -1 {
-			r.tail.coord.y = r.tail.coord.y - 1
-			r.tail.coord.x = r.tail.coord.x - 1
+	} else if r.knots[i].y-r.knots[j].y == -2 {
+		if r.knots[i].x-r.knots[j].x == 0 {
+			r.knots[j].y = r.knots[j].y - 1
+		} else if r.knots[i].x-r.knots[j].x >= 1 {
+			r.knots[j].y = r.knots[j].y - 1
+			r.knots[j].x = r.knots[j].x + 1
+		} else if r.knots[i].x-r.knots[j].x <= -1 {
+			r.knots[j].y = r.knots[j].y - 1
+			r.knots[j].x = r.knots[j].x - 1
 		}
 	} else {
 		fmt.Println("!!!!!Shouldn't go in here?????")
 	}
-	r.noteTailsPosition()
 }
 
-func (r *rope) moveLeft() {
-	r.head.coord.x = r.head.coord.x - 1
-	r.moveTail()
+func (r *rope) moveLeft(i int) {
+	r.knots[i].x = r.knots[i].x - 1
+	r.moveTail(i, i+1)
 }
 
-func (r *rope) moveUp() {
-	r.head.coord.y = r.head.coord.y - 1
-	r.moveTail()
+func (r *rope) moveUp(i int) {
+	r.knots[i].y = r.knots[i].y - 1
+	r.moveTail(i, i+1)
 }
 
-func (r *rope) moveDown() {
-	r.head.coord.y = r.head.coord.y + 1
-	r.moveTail()
+func (r *rope) moveDown(i int) {
+	r.knots[i].y = r.knots[i].y + 1
+	r.moveTail(i, i+1)
 }
 
 func (r *rope) calculateTailPositions() int {
@@ -151,7 +142,7 @@ func (r *rope) calculateTailPositions() int {
 	return count
 }
 
-func partOne(lines []string) (string, error) {
+func partOne(lines []string, numKnots int) (string, error) {
 
 	p := point{
 		x: 0,
@@ -161,13 +152,13 @@ func partOne(lines []string) (string, error) {
 		p: true,
 	}
 
+	knots := make([]point, numKnots)
+	for k := 0; k < numKnots; k++ {
+		knots[k] = p
+	}
+
 	rope := &rope{
-		head: head{
-			coord: p,
-		},
-		tail: tail{
-			coord: p,
-		},
+		knots:         knots,
 		tailPositions: m,
 	}
 
@@ -179,7 +170,7 @@ func partOne(lines []string) (string, error) {
 			return "", err
 		}
 
-		var f func()
+		var f func(int)
 		switch motion[0] {
 		case "R":
 			f = rope.moveRight
@@ -193,8 +184,12 @@ func partOne(lines []string) (string, error) {
 			return "", fmt.Errorf("unknown motion")
 		}
 
-		for i := 1; i <= steps; i++ {
-			f()
+		for s := 0; s < steps; s++ {
+			f(0) // head and a knot right after moves
+			for i := 1; i < numKnots-1; i++ {
+				rope.moveTail(i, i+1)
+			}
+			rope.noteTailsPosition()
 		}
 	}
 
