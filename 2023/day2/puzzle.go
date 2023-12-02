@@ -18,7 +18,8 @@ func Solve(easy bool) (name string, res int, err error) {
 		return
 	}
 
-		res, err = partOne(lines)
+//		res, err = partOne(lines)
+		res, err = partTwo(lines)
 
 	return
 }
@@ -68,3 +69,34 @@ func partOne(lines []string) (int, error) {
 	return sum, nil
 }
 
+
+var maxes = map[string]int{"red": 0, "green": 0, "blue": 0}
+
+func partTwo(lines []string) (int, error) {
+	sum := 0
+	for _, line := range lines {
+		instruction := strings.Split(line, ":")
+		shows := strings.Split(instruction[1], ";")
+		for _, s := range shows {
+			draws := strings.Split(s, ",")
+			for _, d := range draws {
+				res := util.RemoveWhiteSpaces(strings.Split(d, " "))
+				maxNum := maxes[res[1]]
+				num, err := strconv.Atoi(res[0])
+				if err != nil {
+					return 0, err
+				}
+				if num > maxNum {
+					maxes[res[1]] = num
+				}
+			}
+		}
+
+		power := maxes["red"] * maxes["green"] * maxes["blue"]
+		sum += power
+		maxes["red"] = 0
+		maxes["green"] = 0
+		maxes["blue"] = 0
+	}
+	return sum, nil
+}
