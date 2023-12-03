@@ -36,9 +36,6 @@ func setInput(easy bool) {
 
 func partOne(lines []string) (int, error) {
 	sum := 0
-	nonAdjSum := 0
-	allSum := 0
-	countAllNum := 0
 
 	d := len(lines)
 	symbolsMatrix := util.GetEmptyMatrix[string](d, d)
@@ -97,24 +94,6 @@ func partOne(lines []string) (int, error) {
 						return -1, fmt.Errorf("failed to convert to int %s", num)
 					}
 					sum += n
-				} else {
-					if len(num) > 0 {
-						n, err := strconv.Atoi(num)
-						if err != nil {
-							return -1, fmt.Errorf("failed to convert to int %s", num)
-						}
-						nonAdjSum += n
-						fmt.Printf("non adjacent number %s\n", num)
-					}
-				}
-				
-				if len(num) > 0 {
-					n, err := strconv.Atoi(num)
-					if err != nil {
-						return -1, fmt.Errorf("failed to convert to int %s", num)
-					}
-					allSum += n
-					countAllNum++
 				}
 
 				// start over
@@ -128,35 +107,12 @@ func partOne(lines []string) (int, error) {
 				return -1, fmt.Errorf("failed to convert to int %s", num)
 			}
 			sum += n
-		} else {
-			if len(num) > 0 {
-				n, err := strconv.Atoi(num)
-				if err != nil {
-					return -1, fmt.Errorf("failed to convert to int %s", num)
-				}
-				nonAdjSum += n
-				fmt.Printf("non adjacent number %s\n", num)
-			}
-		}
-
-		if len(num) > 0 {
-			n, err := strconv.Atoi(num)
-			if err != nil {
-				return -1, fmt.Errorf("failed to convert to int %s", num)
-			}
-			allSum += n
-			countAllNum++
 		}
 
 		// start over
 		num = ""
 		isAdj = false
 	}
-	
-	fmt.Printf("non adjacent sum = %v\n", nonAdjSum)
-	fmt.Printf("all sum = %v\n", allSum)
-	fmt.Printf("all sum minus non adj = %v\n", allSum - nonAdjSum)
-	fmt.Printf("num of numbers = %v\n", countAllNum)
 	return sum, nil
 }
 
