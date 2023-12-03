@@ -20,7 +20,7 @@ func Solve(easy bool) (name string, res int, err error) {
 	}
 
 	res, err = partOne(lines)
-	//			res, err = partTwo(lines)
+	//	res, err = partTwo(lines)
 
 	return
 
@@ -94,6 +94,23 @@ func partOne(lines []string) (int, error) {
 						return -1, fmt.Errorf("failed to convert to int %s", num)
 					}
 					sum += n
+
+					number := number{
+						xStart: x - len(num),
+						xEnd:   x - 1,
+						y:      y,
+						value:  n,
+					}
+					c1 := coord{x: x - 1, y: y}
+					coordsToNum[c1] = number
+					if len(num) >= 2 {
+						c2 := coord{x: x - 2, y: y}
+						coordsToNum[c2] = number
+					}
+					if len(num) >= 3 {
+						c3 := coord{x: x - 3, y: y}
+						coordsToNum[c3] = number
+					}
 				}
 
 				// start over
@@ -107,13 +124,32 @@ func partOne(lines []string) (int, error) {
 				return -1, fmt.Errorf("failed to convert to int %s", num)
 			}
 			sum += n
+
+			number := number{
+				xStart: len(line) - len(num),
+				xEnd:   len(line) - 1,
+				y:      y,
+				value:  n,
+			}
+			c1 := coord{x: len(line) - 1, y: y}
+			coordsToNum[c1] = number
+			if len(num) >= 2 {
+				c2 := coord{x: len(line) - 2, y: y}
+				coordsToNum[c2] = number
+			}
+			if len(num) >= 3 {
+				c3 := coord{x: len(line) - 3, y: y}
+				coordsToNum[c3] = number
+			}
 		}
 
 		// start over
 		num = ""
 		isAdj = false
 	}
-	return sum, nil
+
+	return partTwo(d, symbolsMatrix)
+	//	return sum, nil // part one
 }
 
 var validDigit = regexp.MustCompile("\\d")
@@ -127,10 +163,82 @@ func isDot(s string) bool {
 	return validDot.MatchString(s)
 }
 
-func partTwo(lines []string) (int, error) {
+type coord struct {
+	x int
+	y int
+}
+
+type number struct {
+	xStart int
+	xEnd   int
+	y      int
+	value  int
+}
+
+var coordsToNum = map[coord]number{}
+
+func partTwo(d int, symbolsMatrix [][]string) (int, error) {
 	sum := 0
-	//	for _, line := range lines {
-	//
-	//	}
+
+	for y := 0; y < d; y++ {
+		for x := 0; x < d; x++ {
+			if symbolsMatrix[y][x] == "*" {
+				// check for adjacent numbers
+				var nums []number
+
+				xm1, xp1, ym1, yp1 := x-1, x+1, y-1, y+1
+				n, ok := coordsToNum[coord{x: xm1, y: ym1}]
+				if xm1 < d && ym1 < d && xm1 >= 0 && ym1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+				n, ok = coordsToNum[coord{x: x, y: ym1}]
+				if ym1 < d && ym1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+				n, ok = coordsToNum[coord{x: xp1, y: ym1}]
+				if xp1 < d && ym1 < d && xp1 >= 0 && ym1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+
+				n, ok = coordsToNum[coord{x: xm1, y: yp1}]
+				if xm1 < d && yp1 < d && xm1 >= 0 && yp1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+				n, ok = coordsToNum[coord{x: x, y: yp1}]
+				if yp1 < d && yp1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+
+				n, ok = coordsToNum[coord{x: xp1, y: yp1}]
+				if xp1 < d && yp1 < d && xp1 >= 0 && yp1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+
+				n, ok = coordsToNum[coord{x: xm1, y: y}]
+				if xm1 < d && xm1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+
+				n, ok = coordsToNum[coord{x: xp1, y: y}]
+				if xp1 < d && xp1 >= 0 && ok {
+					nums = append(nums, n)
+				}
+
+				seen := map[number]bool{}
+				var res []number
+				for _, n := range nums {
+					if _, ok := seen[n]; !ok {
+						seen[n] = true
+						res = append(res, n)
+					}
+				}
+
+				if len(res) == 2 {
+					sum += res[0].value * res[1].value
+				}
+			}
+		}
+	}
+
 	return sum, nil
 }
