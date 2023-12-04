@@ -1,7 +1,7 @@
 package main
 
 import (
-	"advent-of-code-go/2023/day3"
+	"advent-of-code-go/2023/day4"
 	"fmt"
 )
 
@@ -9,7 +9,7 @@ func main() {
 
 	fmt.Println("Calculating solution for...")
 
-	day, res, err := day3.Solve(false)
+	day, res, err := day4.Solve(false)
 
 	fmt.Println("---> ", day, " <---")
 	fmt.Println()
