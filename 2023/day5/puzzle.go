@@ -53,7 +53,7 @@ func partOne(lines []string) (int, error) {
 		}
 	}
 	
-	seeds := strings.Split(strings.Split(lines[0], ": ")[1], " ")
+	seeds := getSeeds(strings.Split(strings.Split(lines[0], ": ")[1], " "))
 
 	// for each seed
 	for _, seed := range seeds {
@@ -66,6 +66,31 @@ func partOne(lines []string) (int, error) {
 		}
 	}
 	return minLoc, nil
+}
+
+func getSeeds(inputSeeds []string) []string {
+	var res []string
+	for i, j := 0, 1; j < len(inputSeeds); j += 2 {
+		start := inputSeeds[i]
+		rng := inputSeeds[j]
+
+		s, err := strconv.Atoi(start)
+		if err != nil {
+			return res
+		}
+
+		r, err := strconv.Atoi(rng)
+		if err != nil {
+			return res
+		}
+
+		for k := s; k < s + r; k++ {
+			res = append(res, strconv.Itoa(k))
+		}
+
+		i += 2
+	}
+	return res
 }
 
 var input [7][]string
