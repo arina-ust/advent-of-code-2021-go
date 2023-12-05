@@ -36,6 +36,18 @@ func setInput(easy bool) {
 
 var title = regexp.MustCompile("[A-Za-z]")
 
+
+// TODO for Part 2
+// 1. Optimize import:
+//   -put sources into map with source as key and list of dest, range, dx as value
+//   -put sources into slice of sources
+//   -sort the slice
+//   -put into struct both slice and map?
+//   -add struct to the list of structs (each struct = each map)
+// 2. Optimize solution:
+//   -do binary search in the slice of a given struct
+//   -calculate mapped value based on the found value and corresponding values from the map 
+
 func partOne(lines []string) (int, error) {
 	minLoc := math.MaxInt
 
