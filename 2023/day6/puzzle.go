@@ -18,7 +18,8 @@ func Solve(easy bool) (name string, res int, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
+	//	res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 
@@ -94,8 +95,39 @@ func calculate(races []*race) (int, error) {
 				wins++
 			}
 		}
-		
+
 		res *= wins
 	}
 	return res, nil
+}
+
+func partTwo(lines []string) (int, error) {
+
+	var races = make([]*race, 1)
+
+	times := strings.Split(strings.TrimSpace(strings.Split(lines[0], ": ")[1]), " ")
+	time := ""
+	for _, v := range times {
+		time += strings.TrimSpace(v)
+	}
+	t, err := strconv.Atoi(time)
+	if err != nil {
+		return 0, err
+	}
+	races[0] = &race{
+		time: t,
+	}
+
+	distances := strings.Split(strings.TrimSpace(strings.Split(lines[1], ": ")[1]), " ")
+	dist := ""
+	for _, v := range distances {
+		dist += strings.TrimSpace(v)
+	}
+	d, err := strconv.Atoi(dist)
+	if err != nil {
+		return 0, err
+	}
+	races[0].distance = d
+
+	return calculate(races)
 }
