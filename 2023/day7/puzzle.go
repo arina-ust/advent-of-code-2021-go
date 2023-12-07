@@ -46,10 +46,52 @@ func (h *hand) getStrength() int {
 	for _, card := range h.cards {
 		m[card] += 1
 	}
-	if len(m) == 5 { // hand size
-		if m['J'] != 0 {
+
+	if m['J'] == 4 {
+		// JJJJK
+		return 7 // five of kind
+	}
+	if m['J'] == 3 {
+		if len(m) == 2 {
+			// JJJKK
+			return 7 // five of kind
+		} else if len(m) == 3 {
+			// JJJKQ
+			return 6 // four of kind
+		}
+	}
+	if m['J'] == 2 {
+		if len(m) == 2 {
+			//// JJKKK
+			return 7 // five of kind
+		} else if len(m) == 3 {
+			// JJKKQ
+			return 6 // four of kind
+		} else if len(m) == 4 {
+			// JJKTQ
+			return 4 // three of kind
+		}
+	}
+	if m['J'] == 1 {
+		if len(m) == 2 {
+			//// JKKKK
+			return 7 // five of kind
+		} else if len(m) == 3 {
+			// JKKKQ
+			return 6 // four of kind
+		} else if len(m) == 4 {
+			// JKKTQ
+			return 4 // three of kind
+		} else if len(m) == 5 {
+			// J2KTQ
 			return 2 // one pair
 		}
+	}
+
+	if len(m) == 5 { // hand size
+//		if m['J'] != 0 {
+//			return 2 // one pair
+//		}
 		return 1 // high card
 	}
 
@@ -57,33 +99,33 @@ func (h *hand) getStrength() int {
 		if v == 5 {
 			return 7 // five of kind
 		} else if v == 4 {
-			if m['J'] != 0 {
-				return 7 // five of kind
-			}
+//			if m['J'] != 0 {
+//				return 7 // five of kind
+//			}
 			return 6 // four of kind
 		} else if v == 3 {
 			if len(m) == 2 {
-				if m['J'] != 0 {
-					return 7 // five of kind
-				}
+//				if m['J'] != 0 {
+//					return 7 // five of kind
+//				}
 				return 5 // full house
 			}
 			if len(m) == 3 {
-				if m['J'] != 0 {
-					return 4 + 1 + m['J']// four of kind
-				}
+//				if m['J'] != 0 {
+//					return 4 + 1 + m['J']// four of kind
+//				}
 				return 4 // three of kind
 			}
 		} else if v == 2 {
 			if len(m) == 3 {
-				if m['J'] != 0 {
-					return 3 + 1 + m['J'] // full house OR four of a kind
-				}
+//				if m['J'] != 0 {
+//					return 3 + 1 + m['J'] // full house OR four of a kind
+//				}
 				return 3 // two pair
 			} else if len(m) == 4 {
-				if m['J'] != 0 {
-					return 2 + m['J'] // three of a kind OR two pair
-				}
+//				if m['J'] != 0 {
+//					return 2 + m['J'] // three of a kind OR two pair
+//				}
 				return 2 // one pair
 			}
 		}
