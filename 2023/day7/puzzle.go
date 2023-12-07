@@ -47,34 +47,52 @@ func (h *hand) getStrength() int {
 		m[card] += 1
 	}
 	if len(m) == 5 { // hand size
-		return 1
+		if m['J'] != 0 {
+			return 2 // one pair
+		}
+		return 1 // high card
 	}
 
 	for _, v := range m {
 		if v == 5 {
-			return 7
+			return 7 // five of kind
 		} else if v == 4 {
-			return 6
+			if m['J'] != 0 {
+				return 7 // five of kind
+			}
+			return 6 // four of kind
 		} else if v == 3 {
 			if len(m) == 2 {
-				return 5
+				if m['J'] != 0 {
+					return 7 // five of kind
+				}
+				return 5 // full house
 			}
 			if len(m) == 3 {
-				return 4
+				if m['J'] != 0 {
+					return 4 + 1 + m['J']// four of kind
+				}
+				return 4 // three of kind
 			}
 		} else if v == 2 {
 			if len(m) == 3 {
-				return 3
+				if m['J'] != 0 {
+					return 3 + 1 + m['J'] // full house OR four of a kind
+				}
+				return 3 // two pair
 			} else if len(m) == 4 {
-				return 2
+				if m['J'] != 0 {
+					return 2 + m['J'] // three of a kind OR two pair
+				}
+				return 2 // one pair
 			}
 		}
 	}
 	return 0 // error
 }
 
-var cardStrengths = map[rune]int{'A': 13, 'K': 12, 'Q': 11, 'J': 10, 'T': 9, '9': 8,
-	'8': 7, '7': 6, '6': 5, '5': 4, '4': 3, '3': 2, '2': 1}
+var cardStrengths = map[rune]int{'A': 13, 'K': 12, 'Q': 11, 'J': 0, 'T': 9, '9': 8,
+	'8': 7, '7': 6, '6': 5, '5': 4, '4': 3, '3': 2, '2': 1,}
 
 func (h *hand) compareLess(other *hand) bool {
 	if h.typeStrength > other.typeStrength {
