@@ -20,6 +20,7 @@ func Solve(easy bool) (name string, res int, err error) {
 	}
 
 	res, err = partOne(lines)
+	res, err = partTwo(lines)
 
 	return
 
@@ -90,6 +91,81 @@ outer:
 				//fmt.Println("resetting instructions ", resets)
 				t = -1
 			}
+		}
+	}
+
+	fmt.Println("ended, took ", time.Now().Sub(t1))
+	return steps, nil
+}
+
+func partTwo(lines []string) (int, error) {
+	t1 := time.Now()
+	fmt.Println("started ", t1)
+	instructions := lines[0]
+
+	nodes := map[string]*node{}
+	var startingNodes []*node
+	for _, line := range lines[2:] {
+		s := strings.Split(line, " = (")
+		v := strings.Split(s[1], ", ")
+		node := &node{
+			name:  s[0],
+			left:  v[0],
+			right: strings.Split(v[1], ")")[0],
+		}
+		nodes[node.name] = node
+		if node.name[len(node.name)-1] == 'A' {
+			startingNodes = append(startingNodes, node)
+		}
+	}
+
+	next := ""
+	steps := 0
+	resets := 0
+
+	for _, n := range startingNodes {
+		fmt.Printf("%s ", n.name)
+	}
+	fmt.Println()
+
+outer:
+	for t := 0; t < len(instructions); t++ {
+		turn := instructions[t]
+		steps++
+
+		for j := 0; j < len(startingNodes); j++ {
+			nextToVisit := startingNodes[j]
+
+			if turn == 'R' {
+				next = nextToVisit.right
+
+			} else if turn == 'L' {
+				next = nextToVisit.left
+
+			} else {
+				fmt.Println("Shouldn't be here!!")
+				break outer
+			}
+
+			//fmt.Printf("next node is %s, with steps num %v\n", next, steps)
+
+			startingNodes[j] = nodes[next]
+		}
+
+		numWithZ := 0
+		for _, n := range startingNodes {
+			if n.name[len(n.name)-1] == 'Z' {
+				numWithZ++ // TODO remove that node from further calculations?
+			}
+		}
+		if numWithZ == len(startingNodes) {
+			break outer
+		}
+
+		if t == len(instructions)-1 {
+			resets++
+			//fmt.Println("resetting instructions ", resets)
+			t = -1
 		}
 	}
 
