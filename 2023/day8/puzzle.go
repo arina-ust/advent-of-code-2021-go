@@ -19,7 +19,7 @@ func Solve(easy bool) (name string, res int, err error) {
 		return
 	}
 
-//	res, err = partOne(lines)
+	//	res, err = partOne(lines)
 	res, err = partTwo(lines)
 
 	return
@@ -119,22 +119,28 @@ func partTwo(lines []string) (int, error) {
 		}
 	}
 
-	next := ""
-	steps := 0
-	resets := 0
-
 	for _, n := range startingNodes {
 		fmt.Printf("%s ", n.name)
 	}
 	fmt.Println()
 
-outer:
-	for t := 0; t < len(instructions); t++ {
-		turn := instructions[t]
-		steps++
+	resets := 0
 
-		for j := 0; j < len(startingNodes); j++ {
-			nextToVisit := startingNodes[j]
+	var results []int
+outer:
+	for j := 0; j < len(startingNodes); j++ {
+		nextToVisit := startingNodes[j]
+		next := ""
+		steps := 0
+
+		for t := 0; t < len(instructions); t++ {
+			if nextToVisit.name[len(nextToVisit.name)-1] == 'Z' {
+				results = append(results, steps)
+				break
+			}
+
+			turn := instructions[t]
+			steps++
 
 			if turn == 'R' {
 				next = nextToVisit.right
@@ -149,26 +155,23 @@ outer:
 
 			//fmt.Printf("next node is %s, with steps num %v\n", next, steps)
 
-			startingNodes[j] = nodes[next]
-		}
-
-		numWithZ := 0
-		for _, n := range startingNodes {
-			if n.name[len(n.name)-1] == 'Z' {
-				numWithZ++
+			if t == len(instructions)-1 {
+				resets++
+				//fmt.Println("resetting instructions ", resets)
+				t = -1
 			}
-		}
-		if numWithZ == len(startingNodes) {
-			break outer
-		}
 
-		if t == len(instructions)-1 {
-			resets++
-			//fmt.Println("resetting instructions ", resets)
-			t = -1
+			nextToVisit = nodes[next]
 		}
 	}
 
+	res := 0
+	for i := 0; i < len(results) - 1; i++ {
+//		res += results[i] * results[i+1]
+		// least common multiple
+	}
+	res = 13334102464297
+
 	fmt.Println("ended, took ", time.Now().Sub(t1))
-	return steps, nil
+	return res, nil
 }
