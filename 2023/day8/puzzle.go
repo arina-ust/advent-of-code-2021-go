@@ -19,7 +19,7 @@ func Solve(easy bool) (name string, res int, err error) {
 		return
 	}
 
-	res, err = partOne(lines)
+//	res, err = partOne(lines)
 	res, err = partTwo(lines)
 
 	return
@@ -155,7 +155,7 @@ outer:
 		numWithZ := 0
 		for _, n := range startingNodes {
 			if n.name[len(n.name)-1] == 'Z' {
-				numWithZ++ // TODO remove that node from further calculations?
+				numWithZ++
 			}
 		}
 		if numWithZ == len(startingNodes) {
