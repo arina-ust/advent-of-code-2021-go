@@ -61,7 +61,10 @@ outer:
 	previousCol := nextColNum
 	previousRow := nextRowNum
 
+	loop := map[node]bool{}
 	for {
+		loop[node{value: lines[nextRowNum][nextColNum], col: nextColNum, row: nextRowNum}] = true
+
 		nextRowNum, nextColNum, previousRow, previousCol = nextMove(lines, nextRowNum, nextColNum, previousRow, previousCol)
 		
 		res++
@@ -71,7 +74,41 @@ outer:
 		}
 	}
 
-	return res / 2, nil
+	countInsideLoopTiles := 0
+
+	for i := 0; i < rowNum; i++ {
+		for j := 0; j < colNum; j++ {
+			nd := node{value: lines[i][j], col: j, row: i}
+			_, ok := loop[nd]
+			if !ok {
+				//                           up  down  right left
+				var neighbours = []int{i + 1, i - 1, j + 1, j - 1}
+				countLoopNeighbours := 0
+
+				for k, n := range neighbours {
+					if n >= colNum || n >= rowNum || n < 0{
+						continue
+					}
+					var value node
+					if k == 0 || k == 1 { // up or down
+						value = node{value: lines[n][j], col: j, row: n,}
+					} else { // left or right
+						value = node{value: lines[i][n], col: n, row: i,}
+					}
+					if _, ok := loop[value]; ok {
+						countLoopNeighbours++
+					}
+				}
+				if countLoopNeighbours == 4 { // TODO incorrect, there could be neighbors that are not in the loop but still enclosed
+					countInsideLoopTiles++
+				}
+			}
+		}
+	}
+
+
+//	return res / 2, nil // part one
+	return countInsideLoopTiles, nil // part two
 }
 
 func nextMove(lines [][]string, i int, j int, prevI, prevJ int) (int, int, int, int) {
