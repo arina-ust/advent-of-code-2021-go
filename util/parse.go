@@ -49,3 +49,23 @@ func ReadMatrix(filepath string) ([][]int, error) {
 
 	return matrix, scanner.Err()
 }
+
+func ReadMatrixString(filepath string) ([][]string, error) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var matrix [][]string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		row := []string{}
+		for _, n := range strings.Split(scanner.Text(), "") {
+			row = append(row, n)
+		}
+		matrix = append(matrix, row)
+	}
+
+	return matrix, scanner.Err()
+}
