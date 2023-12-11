@@ -157,7 +157,7 @@ func partTwo(lines [][]string) (int, error) {
 		}
 		emptyLineIndices[j] = countEmptyLines
 		if countEmpty == len(lines[0]) {
-			countEmptyLines++
+			countEmptyLines+=999999
 		}
 	}
 
@@ -173,7 +173,7 @@ func partTwo(lines [][]string) (int, error) {
 		}
 		emptyColIndices[i] = countEmptyCols
 		if countEmpty == len(lines) {
-			countEmptyCols++
+			countEmptyCols+=999999
 		}
 	}
 

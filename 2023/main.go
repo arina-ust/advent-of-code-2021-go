@@ -9,7 +9,7 @@ func main() {
 
 	fmt.Println("Calculating solution for...")
 
-	day, res, err := day11.Solve(true)
+	day, res, err := day11.Solve(false)
 
 	fmt.Println("---> ", day, " <---")
 	fmt.Println()
