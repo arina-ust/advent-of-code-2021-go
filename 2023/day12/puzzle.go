@@ -35,10 +35,10 @@ func setInput(easy bool) {
 
 func partOne(lines []string) (int, error) {
 	sum := 0
-	
+
 	for _, line := range lines {
 		fmt.Println(line)
-		
+
 		input := strings.Split(line, " ")
 		damagedStr := strings.Split(input[1], ",")
 		var damaged []int
@@ -48,41 +48,62 @@ func partOne(lines []string) (int, error) {
 		}
 		sum += countArrangements(input[0], damaged)
 	}
-	
 
 	return sum, nil
 }
 
+type broken struct {
+	startIndex int
+	length     int
+}
+
 func countArrangements(s string, damaged []int) int {
-	restored := "" 
-	j := 0
-	canNextBeDamaged := true
-	for i := 0; i < len(s); i ++{
-		ch := string(s[i])
-		
-		if ch == "." {
-			canNextBeDamaged = true
-		}
-		
-		if ch == "?" {
-			if j < len(damaged) && damaged[j] > 0 && canNextBeDamaged{
-				restored += "#"
-				damaged[j] -= 1
-			} else {
-				restored += "."
-				canNextBeDamaged = true
+	var knownBrokens []broken
+	b := broken{}
+	for i := 0; i < len(s); i++ {
+		if string(s[i]) == "#" {
+			b.startIndex = i
+			b.length = 1
+
+			for j := i + 1; j < len(s); j++ {
+				if string(s[j]) == "#" {
+					b.length += 1
+				} else {
+					break
+				}
 			}
-		} else {
-			if ch == "#" && j < len(damaged) {
-				damaged[j] -= 1
-			}
-			restored += ch
+			i += b.length
+
+			knownBrokens = append(knownBrokens, b)
+			b = broken{}
 		}
-		if j < len(damaged)&& damaged[j] == 0 {
-			j++
-			canNextBeDamaged = false
-		} 
 	}
+	fmt.Println(knownBrokens)
+
+	var expectedBroken []broken
+	for _, d := range damaged {
+		expectedBroken = append(expectedBroken, broken{length: d})
+	}
+
+	for _, eb := range expectedBroken {
+		countBroken := 0
+		countUnknown := 0
+		for j := 0; j < len(s) && eb.length > countBroken; j++ {
+			ch := string(s[j])
+			if ch == "." {
+				countBroken = 0
+				countUnknown = 0
+				continue
+			} else if ch == "#" {
+				countBroken++
+			} else {
+				countUnknown++
+			}
+		}
+	}
+
+	restored := ""
+
 	fmt.Println(restored)
 	return 1
 }
