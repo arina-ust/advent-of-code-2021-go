@@ -3,6 +3,7 @@ package day12
 import (
 	"advent-of-code-go/util"
 	"fmt"
+	"github.com/mowshon/iterium"
 	"strconv"
 	"strings"
 )
@@ -55,11 +56,12 @@ func partOne(lines []string) (int, error) {
 type broken struct {
 	startIndex int
 	length     int
+	isFull     bool
 }
 
 func countArrangements(s string, damaged []int) int {
-	var knownBrokens []broken
-	b := broken{}
+	knownBrokens := map[int]*broken{} // length to object
+	b := &broken{}
 	for i := 0; i < len(s); i++ {
 		if string(s[i]) == "#" {
 			b.startIndex = i
@@ -74,36 +76,48 @@ func countArrangements(s string, damaged []int) int {
 			}
 			i += b.length
 
-			knownBrokens = append(knownBrokens, b)
-			b = broken{}
+			knownBrokens[b.length] = b
+			b = &broken{}
 		}
 	}
 	fmt.Println(knownBrokens)
 
-	var expectedBroken []broken
-	for _, d := range damaged {
-		expectedBroken = append(expectedBroken, broken{length: d})
+	potentialChunks := strings.Split(s, ".")
+
+	damagedObjects := map[int]*broken{}
+	for i, d := range damaged {
+		damagedObjects[d] = &broken{length: d, startIndex: i}
 	}
 
-	for _, eb := range expectedBroken {
-		countBroken := 0
-		countUnknown := 0
-		for j := 0; j < len(s) && eb.length > countBroken; j++ {
-			ch := string(s[j])
-			if ch == "." {
-				countBroken = 0
-				countUnknown = 0
+	count := 0
+	for _, pc := range potentialChunks { //???.### -> [???, ###]
+		if len(pc) == 0 {
+			continue
+		}
+		if len(pc) == strings.Count(pc, "#") {
+			kb := knownBrokens[len(pc)]
+			kb.isFull = true
+			pc = "" // does it work with non-pointers?
+			do := damagedObjects[len(pc)]
+			do.isFull = true
+			continue
+		}
+		chars := []string{".", "#"}
+		permsI := iterium.Permutations(chars, len(pc))
+		permutations, _ := permsI.Slice() // [[] [] []]
+		for _, d := range damaged {
+			do := damagedObjects[d]
+			if do.isFull {
 				continue
-			} else if ch == "#" {
-				countBroken++
-			} else {
-				countUnknown++
+			}
+			for _, p := range permutations {
+				if strings.Count(strings.Join(p, ""), "#") == d {
+					count++
+				}
 			}
 		}
 	}
 
-	restored := ""
-
-	fmt.Println(restored)
+	fmt.Println(count)
 	return 1
 }
